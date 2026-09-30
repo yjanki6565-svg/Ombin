@@ -245,106 +245,148 @@ function AppLockScreen({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+    <div className="min-h-screen bg-[#070a13] flex items-center justify-center p-4 relative overflow-hidden app-bg-gradient selection:bg-indigo-500 selection:text-white">
+      {/* Ambient background glows */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/80 p-7 shadow-2xl backdrop-blur-2xl relative z-10 ring-1 ring-white/10">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white text-xl font-black">OM</div>
-          <h1 className="text-xl font-bold text-white">User Login</h1>
-          <p className="mt-1 text-xs text-slate-400">Local profile access</p>
+          <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white font-serif text-2xl font-bold shadow-lg shadow-indigo-500/30 ring-1 ring-white/20">
+            ॐ
+          </div>
+          <h1 className="text-xl font-extrabold tracking-tight text-white">Om-LifeOS Sovereign Vault</h1>
+          <p className="mt-1 text-xs text-slate-400 font-medium">Local-first encrypted personal operating system</p>
         </div>
 
         {mode === 'login' && !showCreate && (
           <>
             <div className="space-y-3">
-              <input autoFocus type="text" value={identity} onChange={e => setIdentity(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()} placeholder="Username / Email Id" className="h-11 w-full rounded-full border border-slate-700 bg-slate-800 px-5 text-sm text-white outline-none focus:border-indigo-500" />
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()} placeholder="Password" className="h-11 w-full rounded-full border border-slate-700 bg-slate-800 px-5 text-sm text-white outline-none focus:border-indigo-500" />
-              <button type="button" onClick={submit} disabled={busy} className="w-full rounded-full bg-indigo-600 py-3 text-sm font-bold text-white disabled:opacity-50">{busy ? 'Checking…' : 'Login'}</button>
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Username or Profile</label>
+                <input
+                  autoFocus
+                  type="text"
+                  value={identity}
+                  onChange={e => setIdentity(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && submit()}
+                  placeholder="Enter profile username"
+                  className="h-11 w-full rounded-xl border border-slate-700/80 bg-slate-800/80 px-4 text-sm text-white placeholder-slate-500 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Master Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && submit()}
+                  placeholder="••••••••••••"
+                  className="h-11 w-full rounded-xl border border-slate-700/80 bg-slate-800/80 px-4 text-sm text-white placeholder-slate-500 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={submit}
+                disabled={busy}
+                className="mt-2 w-full rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-500 hover:to-indigo-600 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {busy ? 'Authenticating…' : 'Unlock Sovereign Vault'}
+              </button>
             </div>
 
-            <button type="button" onClick={() => { setShowHelp(v => !v); setHelpMode('choose'); setError(''); }} className="mt-4 w-full text-xs font-semibold text-slate-400 hover:text-white hover:underline">
-              Forgot Username / Password?
+            <button
+              type="button"
+              onClick={() => { setShowHelp(v => !v); setHelpMode('choose'); setError(''); }}
+              className="mt-4 w-full text-xs font-semibold text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer"
+            >
+              Forgot Username / Password or New Profile?
             </button>
             {showHelp && (
-              <div className="mt-3 rounded-2xl border border-slate-700 bg-slate-800/70 p-3 space-y-2">
+              <div className="mt-3.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 p-3.5 space-y-2.5 backdrop-blur-md">
                 {helpMode === 'choose' && (
                   <div className="grid grid-cols-1 gap-2">
-                    <button type="button" onClick={() => setHelpMode('username')} className="rounded-xl border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-200">Forgot Username</button>
-                    <button type="button" onClick={startForgotPassword} className="rounded-xl border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-200">Forgot Password</button>
-                    <button type="button" onClick={startCreate} className="rounded-xl border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-200">Create Local Profile</button>
+                    <button type="button" onClick={() => setHelpMode('username')} className="rounded-xl border border-slate-600/80 bg-slate-900/60 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition-colors cursor-pointer">Find Username</button>
+                    <button type="button" onClick={startForgotPassword} className="rounded-xl border border-slate-600/80 bg-slate-900/60 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition-colors cursor-pointer">Recover Password</button>
+                    <button type="button" onClick={startCreate} className="rounded-xl border border-indigo-500/50 bg-indigo-950/40 px-3 py-2 text-xs font-semibold text-indigo-300 hover:bg-indigo-900/50 transition-colors cursor-pointer">Create Local Profile</button>
                   </div>
                 )}
                 {helpMode === 'username' && (
                   <div>
-                    <div className="mb-2 text-xs text-slate-300">Your local profiles:</div>
-                    <div className="space-y-1">
-                      {profiles.map(p => <div key={p.id} className="rounded-lg bg-slate-900 px-3 py-2 text-xs text-white">{p.name}</div>)}
+                    <div className="mb-2 text-xs text-slate-300 font-medium">Your local profiles on this device:</div>
+                    <div className="space-y-1.5">
+                      {profiles.map(p => (
+                        <div key={p.id} className="flex items-center justify-between rounded-xl bg-slate-900/90 px-3 py-2 text-xs text-white border border-slate-700/60">
+                          <span className="font-semibold">{p.name}</span>
+                          <span className="text-[10px] text-slate-400">{p.role || 'Local User'}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
                 {helpMode === 'password' && (
                   <div className="space-y-2">
-                    <input type="text" value={recoveryIdentity} onChange={e => setRecoveryIdentity(e.target.value)} placeholder="Username / Email Id" className="h-10 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 text-xs text-white" />
-                    <button type="button" onClick={continueForgotPassword} disabled={busy} className="w-full rounded-xl bg-indigo-600 py-2 text-xs font-bold text-white">Continue</button>
+                    <input type="text" value={recoveryIdentity} onChange={e => setRecoveryIdentity(e.target.value)} placeholder="Username / Email Id" className="h-10 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 text-xs text-white outline-none focus:border-indigo-500" />
+                    <button type="button" onClick={continueForgotPassword} disabled={busy} className="w-full rounded-xl bg-indigo-600 py-2 text-xs font-bold text-white hover:bg-indigo-500 cursor-pointer">Continue Recovery</button>
                   </div>
                 )}
               </div>
             )}
-
           </>
         )}
 
         {mode === 'setup' && (
           <>
-            <div className="mb-3 text-sm font-semibold text-white">Create password for {profiles.find(p => p.id === profileId)?.name || identity}</div>
-            <div className="space-y-2">
-              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Create Password (min 6)" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-              <input type="password" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} placeholder="Confirm Password" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-              <input type="text" value={newHint} onChange={e => setNewHint(e.target.value)} placeholder="Password Hint / Clue" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-              <input type="text" value={newQuestion} onChange={e => setNewQuestion(e.target.value)} placeholder="Recovery Question" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-              <input type="text" value={newRecoveryAnswer} onChange={e => setNewRecoveryAnswer(e.target.value)} placeholder="Recovery Answer" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
+            <div className="mb-3 text-sm font-semibold text-white">Create master password for {profiles.find(p => p.id === profileId)?.name || identity}</div>
+            <div className="space-y-2.5">
+              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Create Master Password (min 6)" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+              <input type="password" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} placeholder="Confirm Password" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+              <input type="text" value={newHint} onChange={e => setNewHint(e.target.value)} placeholder="Password Hint / Clue" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+              <input type="text" value={newQuestion} onChange={e => setNewQuestion(e.target.value)} placeholder="Recovery Question" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+              <input type="text" value={newRecoveryAnswer} onChange={e => setNewRecoveryAnswer(e.target.value)} placeholder="Recovery Answer" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
             </div>
-            <button type="button" onClick={submit} disabled={busy} className="mt-3 w-full rounded-full bg-indigo-600 py-3 text-sm font-bold text-white disabled:opacity-50">{busy ? 'Saving…' : 'Create Password & Open App'}</button>
+            <button type="button" onClick={submit} disabled={busy} className="mt-3 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-500 hover:to-indigo-600 cursor-pointer disabled:opacity-50">{busy ? 'Saving…' : 'Save Credentials & Open Hub'}</button>
           </>
         )}
 
         {mode === 'recovery' && (
           <>
-            <div className="mb-2 text-sm font-semibold text-white">Password Recovery</div>
-            <div className="mb-3 rounded-xl bg-slate-800 p-3 text-xs text-slate-300"><span className="font-bold text-slate-200">Hint:</span> {hint || 'No hint was saved.'}</div>
+            <div className="mb-2 text-sm font-semibold text-white">Security Recovery</div>
+            <div className="mb-3 rounded-xl bg-slate-800/90 border border-slate-700/80 p-3 text-xs text-slate-300"><span className="font-bold text-indigo-300">Hint:</span> {hint || 'No hint configured.'}</div>
             <div className="mb-2 text-xs font-semibold text-slate-300">{question || 'Recovery question not configured.'}</div>
-            <input autoFocus type="text" value={recoveryAnswer} onChange={e => setRecoveryAnswer(e.target.value)} placeholder="Recovery Answer" className="mb-3 h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-            <button type="button" onClick={submit} disabled={busy} className="w-full rounded-full bg-indigo-600 py-3 text-sm font-bold text-white">Verify Recovery Answer</button>
-            <button type="button" onClick={() => { setMode('login'); setShowHelp(true); setHelpMode('password'); resetTransient(); }} className="mt-3 w-full text-xs text-slate-400 hover:text-white">Back to login</button>
+            <input autoFocus type="text" value={recoveryAnswer} onChange={e => setRecoveryAnswer(e.target.value)} placeholder="Recovery Answer" className="mb-3 h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+            <button type="button" onClick={submit} disabled={busy} className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-bold text-white hover:bg-indigo-500 cursor-pointer">Verify Recovery Answer</button>
+            <button type="button" onClick={() => { setMode('login'); setShowHelp(true); setHelpMode('password'); resetTransient(); }} className="mt-3 w-full text-xs text-slate-400 hover:text-white cursor-pointer">Back to login</button>
           </>
         )}
 
         {mode === 'reset' && (
           <>
             <div className="mb-3 text-sm font-semibold text-white">Set a New Password</div>
-            <div className="space-y-2">
-              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New Password (min 6)" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-              <input type="password" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} placeholder="Confirm New Password" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-              <input type="text" value={newHint} onChange={e => setNewHint(e.target.value)} placeholder="New Password Hint" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
+            <div className="space-y-2.5">
+              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New Master Password (min 6)" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+              <input type="password" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} placeholder="Confirm New Password" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+              <input type="text" value={newHint} onChange={e => setNewHint(e.target.value)} placeholder="New Password Hint" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
             </div>
-            <button type="button" onClick={submit} disabled={busy} className="mt-3 w-full rounded-full bg-indigo-600 py-3 text-sm font-bold text-white">Reset Password & Open App</button>
+            <button type="button" onClick={submit} disabled={busy} className="mt-3 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-500 hover:to-indigo-600 cursor-pointer">{busy ? 'Resetting…' : 'Reset Password & Open App'}</button>
           </>
         )}
 
         {showCreate && (
-          <div className="space-y-2">
-            <div className="mb-2 text-sm font-semibold text-white">Create Local Profile</div>
-            <input type="text" value={createName} onChange={e => setCreateName(e.target.value)} placeholder="Profile Name" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-            <input type="password" value={createPassword} onChange={e => setCreatePassword(e.target.value)} placeholder="Password (min 6)" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-            <input type="password" value={createPasswordConfirm} onChange={e => setCreatePasswordConfirm(e.target.value)} placeholder="Confirm Password" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-            <input type="text" value={createHint} onChange={e => setCreateHint(e.target.value)} placeholder="Password Hint / Clue" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-            <input type="text" value={createQuestion} onChange={e => setCreateQuestion(e.target.value)} placeholder="Recovery Question" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-            <input type="text" value={createRecoveryAnswer} onChange={e => setCreateRecoveryAnswer(e.target.value)} placeholder="Recovery Answer" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-white" />
-            <button type="button" onClick={createProfile} disabled={busy} className="mt-2 w-full rounded-full bg-indigo-600 py-3 text-sm font-bold text-white">{busy ? 'Creating…' : 'Create Profile & Open App'}</button>
-            <button type="button" onClick={() => { setShowCreate(false); setError(''); }} className="w-full py-2 text-xs text-slate-400 hover:text-white">Back to login</button>
+          <div className="space-y-2.5">
+            <div className="mb-2 text-sm font-bold text-white">Create Sovereign Local Profile</div>
+            <input type="text" value={createName} onChange={e => setCreateName(e.target.value)} placeholder="Profile Full Name" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+            <input type="password" value={createPassword} onChange={e => setCreatePassword(e.target.value)} placeholder="Master Password (min 6)" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+            <input type="password" value={createPasswordConfirm} onChange={e => setCreatePasswordConfirm(e.target.value)} placeholder="Confirm Password" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+            <input type="text" value={createHint} onChange={e => setCreateHint(e.target.value)} placeholder="Password Hint / Clue" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+            <input type="text" value={createQuestion} onChange={e => setCreateQuestion(e.target.value)} placeholder="Recovery Question (e.g. Favorite city)" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+            <input type="text" value={createRecoveryAnswer} onChange={e => setCreateRecoveryAnswer(e.target.value)} placeholder="Recovery Answer" className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white outline-none focus:border-indigo-500" />
+            <button type="button" onClick={createProfile} disabled={busy} className="mt-2 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-500 hover:to-indigo-600 cursor-pointer">{busy ? 'Creating…' : 'Create Profile & Unlock Hub'}</button>
+            <button type="button" onClick={() => { setShowCreate(false); setError(''); }} className="w-full py-2 text-xs text-slate-400 hover:text-white cursor-pointer">Back to login</button>
           </div>
         )}
 
-        {error && <div className="mt-4 rounded-xl border border-red-900/60 bg-red-950/40 p-3 text-xs text-red-300">{error}</div>}
+        {error && <div className="mt-4 rounded-xl border border-rose-900/60 bg-rose-950/40 p-3 text-xs text-rose-300 font-medium">{error}</div>}
       </div>
     </div>
   );
@@ -791,7 +833,7 @@ export default function App() {
     <div
       data-app-root="true"
       className={`flex min-h-screen flex-col font-sans text-slate-900 selection:bg-indigo-500 selection:text-white dark:text-slate-100 ${
-        isTransparent ? 'bg-transparent' : 'bg-slate-50 dark:bg-slate-950'
+        isTransparent ? 'bg-transparent' : 'bg-slate-50 dark:bg-slate-950 app-bg-gradient'
       }`}
     >
       {/* Top Bar */}
@@ -900,6 +942,7 @@ export default function App() {
                 sessions={focusSessions}
                 tasks={tasks}
                 goals={goals}
+                routines={routines}
                 onRefresh={loadAllData}
                 onSuccess={showToast}
               />

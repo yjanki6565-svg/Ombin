@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  DollarSign, Plus, ArrowUpRight,
+  DollarSign, Plus, ArrowUpRight, ArrowUpDown,
   ShieldCheck, Trash2, TrendingUp, Landmark,
   Download, Upload, Paperclip, Receipt, ExternalLink,
-  FileText, X, Eye
+  FileText, X, Eye, Calendar
 } from 'lucide-react';
 import {
   FinanceAccount, FinanceTransaction, Loan, LoanPayment,
@@ -12,6 +12,7 @@ import {
 } from '../types';
 import { storage, generateUUID } from '../lib/storage';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { adToBs, getTodayIso } from '../lib/nepaliDate';
 
 interface FinanceViewProps {
   accounts: FinanceAccount[];
@@ -46,6 +47,56 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
 }) => {
   const today = new Date().toISOString().slice(0, 10);
   const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'accounts' | 'loans' | 'investments' | 'savings' | 'balanceSheet'>('overview');
+  const [summaryPeriod, setSummaryPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+
+  const getPeriodTransactions = (period: 'daily' | 'weekly' | 'monthly' | 'yearly') => {
+    const todayStr = getTodayIso();
+    if (period === 'daily') {
+      return transactions.filter(t => t.date === todayStr);
+    }
+    if (period === 'weekly') {
+      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+      return transactions.filter(t => (t.date || '') >= weekAgo);
+    }
+    if (period === 'monthly') {
+      const currentMonth = todayStr.slice(0, 7);
+      return transactions.filter(t => (t.date || '').slice(0, 7) === currentMonth);
+    }
+    if (period === 'yearly') {
+      const currentYear = todayStr.slice(0, 4);
+      return transactions.filter(t => (t.date || '').slice(0, 4) === currentYear);
+    }
+    return transactions;
+  };
+
+  const periodTxList = getPeriodTransactions(summaryPeriod);
+  let periodIncome = 0;
+  let periodExpense = 0;
+  periodTxList.forEach(t => {
+    const amt = Number(t.amount) || 0;
+    if (t.type === 'income') periodIncome += amt;
+    else if (t.type === 'expense') periodExpense += amt;
+  });
+  const periodBalance = periodIncome - periodExpense;
+  const periodCount = periodTxList.length;
+
+  const formatAdDateDisplay = (iso: string) => {
+    try {
+      const [y, m, d] = iso.split('-');
+      return `${d}-${m}-${y}`;
+    } catch {
+      return iso;
+    }
+  };
+
+  const formatBsDateDisplay = (iso: string) => {
+    try {
+      const bs = adToBs(iso);
+      return `${bs.day} ${bs.monthNameNe} ${bs.year}`;
+    } catch {
+      return '13 असोज 2083';
+    }
+  };
 
   // New Transaction Form state
   const [txType, setTxType] = useState<'expense' | 'income' | 'transfer' | 'investment' | 'loan'>('expense');
@@ -150,6 +201,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   // Transactions Filter
   const [txSearch, setTxSearch] = useState('');
   const [txTypeFilter, setTxTypeFilter] = useState<'all' | 'expense' | 'income' | 'transfer' | 'repayment' | 'investment'>('all');
+  const [txSortOrder, setTxSortOrder] = useState<'desc' | 'asc'>('desc');
 
   // Delete modal state
   const [deleteTarget, setDeleteTarget] = useState<{ store: string; id: string; name: string } | null>(null);
@@ -579,11 +631,18 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
     onSuccess('Ledger exported as CSV');
   };
 
-  const filteredTransactions = transactions.filter(t => {
+  const sortedTransactions = [...transactions].sort((a, b) => {
+    const dateComp = (b.date || '').localeCompare(a.date || '');
+    if (dateComp !== 0) return txSortOrder === 'desc' ? dateComp : -dateComp;
+    const timeComp = (b.createdAt || 0) - (a.createdAt || 0);
+    return txSortOrder === 'desc' ? timeComp : -timeComp;
+  });
+
+  const filteredTransactions = sortedTransactions.filter(t => {
     if (txTypeFilter !== 'all' && t.type !== txTypeFilter) return false;
     if (txSearch) {
       const q = txSearch.toLowerCase();
-      const match = `${t.category} ${t.note || ''} ${t.type} ${t.amount}`.toLowerCase();
+      const match = `${t.category} ${t.note || ''} ${t.type} ${t.amount} ${t.date || ''}`.toLowerCase();
       return match.includes(q);
     }
     return true;
@@ -593,10 +652,10 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Finance & Ledger
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
             Sovereign financial system: liquid accounts, cash flow, amortization loans, liabilities, investments, and net worth balance sheet.
           </p>
         </div>
@@ -605,7 +664,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
           <button
             type="button"
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 transition-all cursor-pointer shadow-2xs"
             title="Export Ledger as CSV"
           >
             <Download className="h-4 w-4 text-slate-500" />
@@ -614,59 +673,63 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
         </div>
       </div>
 
-      {/* 4 Financial KPIs */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      {/* 4 Financial KPIs styled with the ultra-premium soft gradient card look */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Net Worth */}
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-800/80 bg-gradient-to-br from-white via-white to-indigo-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/20 p-5 shadow-xs transition-all hover:shadow-md">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Net Worth</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Net Worth</span>
             <ShieldCheck className="h-4 w-4 text-indigo-500" />
           </div>
-          <div className="mt-3 font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white tabular-nums">
+          <div className="mt-2 font-mono text-3xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400 tabular-nums">
             ₹{netWorth.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
           </div>
-          <div className="mt-1 text-xs text-slate-400 font-medium truncate">
-            Assets ₹{totalAssets.toLocaleString('en-IN')} - Debt ₹{totalLiabilities.toLocaleString('en-IN')}
+          <div className="mt-1.5 text-xs text-slate-400 font-medium truncate">
+            Assets ₹{totalAssets.toLocaleString('en-IN')} · Debt ₹{totalLiabilities.toLocaleString('en-IN')}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        {/* Liquid Cash */}
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-800/80 bg-gradient-to-br from-white via-white to-emerald-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/20 p-5 shadow-xs transition-all hover:shadow-md">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Liquid Cash</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Liquid Cash</span>
             <DollarSign className="h-4 w-4 text-emerald-500" />
           </div>
-          <div className="mt-3 font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400 tabular-nums">
+          <div className="mt-2 font-mono text-3xl font-extrabold tracking-tight text-emerald-500 dark:text-emerald-400 tabular-nums">
             ₹{liquidCash.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
           </div>
-          <div className="mt-1 text-xs text-slate-400 font-medium">Across {accounts.length} bank & cash accounts</div>
+          <div className="mt-1.5 text-xs text-slate-400 font-medium">Across {accounts.length} bank & cash accounts</div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        {/* Investments */}
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-800/80 bg-gradient-to-br from-white via-white to-sky-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-sky-950/20 p-5 shadow-xs transition-all hover:shadow-md">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Investments</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Investments</span>
             <TrendingUp className="h-4 w-4 text-blue-500" />
           </div>
-          <div className="mt-3 font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white tabular-nums">
+          <div className="mt-2 font-mono text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white tabular-nums">
             ₹{investmentValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
           </div>
-          <div className="mt-1 text-xs text-slate-400 font-medium">{investments.length} portfolio assets</div>
+          <div className="mt-1.5 text-xs text-slate-400 font-medium">{investments.length} portfolio assets</div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        {/* Total Debt */}
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-800/80 bg-gradient-to-br from-white via-white to-rose-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-rose-950/20 p-5 shadow-xs transition-all hover:shadow-md">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Total Debt</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Total Debt</span>
             <ArrowUpRight className="h-4 w-4 text-rose-500" />
           </div>
-          <div className="mt-3 font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400 tabular-nums">
+          <div className="mt-2 font-mono text-3xl font-extrabold tracking-tight text-rose-500 dark:text-rose-400 tabular-nums">
             ₹{totalLiabilities.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
           </div>
-          <div className="mt-1 text-xs text-slate-400 font-medium">
+          <div className="mt-1.5 text-xs text-slate-400 font-medium">
             {loans.length} loans · {liabilities.length} liabilities
           </div>
         </div>
       </div>
 
-      {/* Submenu Tabs */}
-      <div className="flex overflow-x-auto pb-2 gap-2 border-b border-slate-200 dark:border-slate-800 no-scrollbar">
+      {/* Submenu Tabs styled as sleek rounded-full pills */}
+      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200/70 dark:border-slate-800 overflow-x-auto no-scrollbar">
         {[
           { id: 'overview', label: 'Cash Flow & Accounts' },
           { id: 'transactions', label: `Transactions (${transactions.length})` },
@@ -679,10 +742,10 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id as any)}
-            className={`rounded-xl px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap tracking-normal transition-all cursor-pointer shrink-0 ${
+            className={`rounded-xl px-4 py-2 text-xs sm:text-sm font-bold whitespace-nowrap tracking-normal transition-all cursor-pointer shrink-0 ${
               activeTab === tab.id
                 ? 'bg-indigo-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/80'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
             }`}
           >
             {tab.label}
@@ -1409,7 +1472,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   Recent Repayment Receipts ({loanPayments.length})
                 </h2>
                 <div className="mt-3 divide-y divide-slate-100 dark:divide-slate-800 max-h-48 overflow-y-auto text-xs">
-                  {loanPayments.slice().reverse().map(p => (
+                  {[...loanPayments].sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0)).map(p => (
                     <div key={p.id} className="py-2 flex justify-between items-center">
                       <div>
                         <div className="font-semibold text-slate-900 dark:text-white">{p.loanName}</div>
@@ -1749,6 +1812,15 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
               />
               <button
                 type="button"
+                onClick={() => setTxSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+                className="flex items-center gap-1.5 h-8 rounded-xl border border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
+                title={txSortOrder === 'desc' ? 'Current: Newest First. Click for Oldest First.' : 'Current: Oldest First. Click for Newest First.'}
+              >
+                <ArrowUpDown className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+                <span>{txSortOrder === 'desc' ? 'Newest First' : 'Oldest First'}</span>
+              </button>
+              <button
+                type="button"
                 onClick={handleExportCSV}
                 className="flex items-center gap-1.5 h-8 rounded-xl border border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
               >
@@ -1789,7 +1861,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                 No transactions match your current search or filter.
               </div>
             ) : (
-              filteredTransactions.slice().reverse().map(tx => {
+              filteredTransactions.map(tx => {
                 const linkedRec = tx.linkedReceiptId ? receipts.find(r => r.id === tx.linkedReceiptId) : undefined;
                 const attachName = tx.fileName;
                 const attachData = tx.fileData;

@@ -6,9 +6,16 @@
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
+    "start": "node server.js",
     "build:single": "vite build && node scripts/build-single-html.js",
+    "bundle:zip": "node scripts/create-complete-project-zip.js",
+    "tauri": "tauri",
+    "tauri:build": "tauri build",
+    "tauri:build:windows": "tauri build --target x86_64-pc-windows-msvc",
+    "tauri:android:init": "tauri android init",
+    "tauri:android:build": "tauri android build --apk",
     "preview": "vite preview",
-    "clean": "rm -rf dist release server.js",
+    "clean": "rm -rf dist release",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

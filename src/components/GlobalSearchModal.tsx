@@ -137,6 +137,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           }
         });
 
+        hits.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
         setResults(hits.slice(0, 50));
       } catch (err) {
         console.error('Search error', err);
@@ -167,23 +168,23 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-slate-900/60 backdrop-blur-sm sm:pt-20">
-      <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center border-b border-slate-100 px-4 py-3 dark:border-slate-800">
-          <Search className="h-4 w-4 text-slate-400 shrink-0" />
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-slate-950/70 backdrop-blur-md sm:pt-20">
+      <div className="w-full max-w-2xl rounded-3xl border border-slate-200/90 bg-white/95 shadow-2xl overflow-hidden backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/95 ring-1 ring-black/5 dark:ring-white/10">
+        <div className="flex items-center border-b border-slate-100 px-4 py-3.5 dark:border-slate-800">
+          <Search className="h-4 w-4 text-indigo-500 shrink-0" />
           <input
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Type to search across everything in Om-LifeOS..."
-            className="flex-1 bg-transparent px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
+            className="flex-1 bg-transparent px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white font-medium"
             autoFocus
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="mr-2 text-xs text-slate-400 hover:text-slate-600"
+              className="mr-2 text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
             >
               Clear
             </button>
@@ -191,7 +192,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="flex h-7 w-7 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors"
           >
             <X className="h-4 w-4" />
           </button>

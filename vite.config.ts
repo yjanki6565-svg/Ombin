@@ -7,11 +7,11 @@ const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig(() => {
   return {
-    base: './',
+    base: process.env.TAURI_ENV_PLATFORM ? './' : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve(process.cwd(), '.'),
       },
     },
     clearScreen: false,

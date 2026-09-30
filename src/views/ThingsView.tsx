@@ -855,8 +855,9 @@ export const ThingsView: React.FC<ThingsViewProps> = ({
                 .length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400">No items found matching criteria.</div>
               ) : (
-                things
+                [...things]
                   .filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()) || t.category.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
                   .map(t => (
                     <div key={t.id} className="rounded-2xl border border-slate-100 p-3.5 text-xs dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
                       <div className="flex justify-between items-start gap-2">
@@ -1031,8 +1032,9 @@ export const ThingsView: React.FC<ThingsViewProps> = ({
                 .length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400">No documents registered.</div>
               ) : (
-                documents
+                [...documents]
                   .filter(d => d.title.toLowerCase().includes(searchQuery.toLowerCase()) || (d.type && d.type.toLowerCase().includes(searchQuery.toLowerCase())))
+                  .sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0))
                   .map(d => (
                     <div key={d.id} className="rounded-2xl border border-slate-100 p-3.5 text-xs dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
                       <div className="flex justify-between items-start gap-2">
@@ -1167,8 +1169,9 @@ export const ThingsView: React.FC<ThingsViewProps> = ({
                 .length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400">No warranties registered.</div>
               ) : (
-                warranties
+                [...warranties]
                   .filter(w => w.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .sort((a, b) => (b.expiry || '').localeCompare(a.expiry || '') || (b.createdAt || 0) - (a.createdAt || 0))
                   .map(w => (
                     <div key={w.id} className="rounded-2xl border border-slate-100 p-3.5 text-xs dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
                       <div className="flex justify-between items-start gap-2">
@@ -1464,8 +1467,9 @@ export const ThingsView: React.FC<ThingsViewProps> = ({
                   No receipts found matching your search.
                 </div>
               ) : (
-                receipts
+                [...receipts]
                   .filter(r => r.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0))
                   .map(r => {
                     const linkedTx = r.linkedTransactionId ? financeTransactions.find(t => t.id === r.linkedTransactionId) : undefined;
                     const fileName = r.fileName;
@@ -1656,8 +1660,9 @@ export const ThingsView: React.FC<ThingsViewProps> = ({
                 .length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400">No certificates registered.</div>
               ) : (
-                certificates
+                [...certificates]
                   .filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .sort((a, b) => (b.expiry || '').localeCompare(a.expiry || '') || (b.createdAt || 0) - (a.createdAt || 0))
                   .map(c => (
                     <div key={c.id} className="rounded-2xl border border-slate-100 p-3.5 text-xs dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
                       <div className="flex justify-between items-start gap-2">
@@ -1792,8 +1797,9 @@ export const ThingsView: React.FC<ThingsViewProps> = ({
                 .length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400">No records found.</div>
               ) : (
-                importantRecords
+                [...importantRecords]
                   .filter(ir => ir.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0))
                   .map(ir => (
                     <div key={ir.id} className="rounded-2xl border border-slate-100 p-3.5 text-xs dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
                       <div className="flex justify-between items-start gap-2">

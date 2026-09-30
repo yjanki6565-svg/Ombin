@@ -89,22 +89,28 @@ export const Header: React.FC<HeaderProps> = ({
     hour12: !is24Hour
   });
 
+  const isTauri = typeof window !== 'undefined' && Boolean((window as any).__TAURI_INTERNALS__ || (window as any).__TAURI__);
+
   return (
     <header
       onMouseDown={(event) => {
-        if (event.button !== 0) return;
+        if (!isTauri || event.button !== 0) return;
         const target = event.target as HTMLElement;
         if (target.closest('button, input, select, textarea, a, [role="button"]')) return;
-        void getCurrentWindow().startDragging();
+        try {
+          void getCurrentWindow().startDragging();
+        } catch {
+          // Graceful fallback in web mode
+        }
       }}
-      className="sticky top-0 z-30 flex h-14 sm:h-16 w-full items-center justify-between border-b border-slate-200 bg-white/95 px-2 sm:px-4 lg:px-6 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 transition-colors gap-1 sm:gap-2">
-      {/* Zone 1: Left - Brand Identity & Nepali BS / Gregorian AD Date (Date is placed where search was) */}
+      className="sticky top-0 z-30 flex h-14 sm:h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/85 px-2 sm:px-4 lg:px-6 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/85 transition-colors gap-1 sm:gap-2">
+      {/* Zone 1: Left - Brand Identity & Nepali BS / Gregorian AD Date */}
       <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 shrink-0 select-none">
         {/* Mobile Hamburger Drawer Trigger */}
         <button
           type="button"
           onClick={onOpenMobileMenu}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 md:hidden cursor-pointer shrink-0 transition-colors"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200/90 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800/80 md:hidden cursor-pointer shrink-0 transition-colors shadow-2xs"
           aria-label="Open Navigation Menu"
         >
           <span className="text-lg leading-none">☰</span>
@@ -114,46 +120,48 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('dashboard')}
-          className="flex items-center gap-1.5 sm:gap-2 text-left focus:outline-none group cursor-pointer shrink-0"
+          className="flex items-center gap-2 text-left focus:outline-none group cursor-pointer shrink-0"
           title="Om-LifeOS Dashboard"
         >
-          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-indigo-600 font-serif font-bold text-white shadow-sm shadow-indigo-500/20 group-hover:scale-105 transition-transform text-sm sm:text-base shrink-0">
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 font-serif font-bold text-white shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-all text-sm sm:text-base shrink-0 ring-1 ring-white/20">
             ॐ
           </div>
-          <span className="text-sm sm:text-base font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap shrink-0 hidden min-[540px]:inline">
-            Om-LifeOS
-          </span>
+          <div className="hidden min-[540px]:flex flex-col">
+            <span className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 dark:text-white whitespace-nowrap leading-tight">
+              Om-LifeOS
+            </span>
+          </div>
         </button>
 
         {/* Date Display (Desktop & Tablet: Full or Semi-full Ribbon) */}
         <button
           type="button"
           onClick={onOpenBsModal}
-          className="hidden sm:inline-flex items-center gap-1.5 lg:gap-2 rounded-xl border border-slate-200/90 bg-slate-50/90 px-2 lg:px-3 py-1.5 transition-all hover:border-indigo-400 hover:bg-white dark:border-slate-800 dark:bg-slate-800/80 dark:hover:border-indigo-500 dark:hover:bg-slate-800 shrink-0 cursor-pointer shadow-2xs group h-9"
+          className="hidden sm:inline-flex items-center gap-1.5 lg:gap-2 rounded-xl border border-slate-200/90 bg-slate-100/60 px-2 lg:px-3 py-1.5 transition-all hover:border-indigo-400 hover:bg-white dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-indigo-500 dark:hover:bg-slate-900 shrink-0 cursor-pointer shadow-2xs group h-9"
           title={`Nepal Bikram Sambat: ${bsDateInfo.bsIso} | Gregorian: ${bsDateInfo.adIso}. Click for converter.`}
           aria-label="Nepal Bikram Sambat and Gregorian AD Calendar Converter"
         >
-          <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0 group-hover:scale-105 transition-transform" />
-          <div className="flex items-center gap-1 lg:gap-2 font-mono text-xs sm:text-[13px] font-semibold tracking-tight whitespace-nowrap">
+          <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <div className="flex items-center gap-1.5 lg:gap-2 font-mono text-xs sm:text-[13px] font-semibold tracking-tight whitespace-nowrap">
             <span className="inline-flex items-center gap-1 text-indigo-700 dark:text-indigo-300">
-              <span className="rounded bg-indigo-100/90 dark:bg-indigo-950/80 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-bold text-indigo-700 dark:text-indigo-300 tracking-wide uppercase">
+              <span className="rounded-md bg-indigo-100 dark:bg-indigo-950/80 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-bold text-indigo-700 dark:text-indigo-300 tracking-wider uppercase">
                 BS
               </span>
-              <span className="text-slate-900 dark:text-slate-100 font-bold">
+              <span className="text-slate-900 dark:text-slate-100 font-bold tabular-nums">
                 {bsDateInfo.bsIso}
               </span>
               {bsDateInfo.bsMonth && (
-                <span className="hidden 2xl:inline text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                <span className="hidden 2xl:inline text-[11px] text-slate-400 dark:text-slate-500 font-normal">
                   ({bsDateInfo.bsMonth})
                 </span>
               )}
             </span>
-            <span className="text-slate-300 dark:text-slate-600 select-none font-normal hidden xl:inline">|</span>
+            <span className="text-slate-300 dark:text-slate-700 select-none font-normal hidden xl:inline">·</span>
             <span className="hidden xl:inline-flex items-center gap-1 text-slate-700 dark:text-slate-300">
-              <span className="rounded bg-slate-200/80 dark:bg-slate-700/80 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-300 tracking-wide uppercase">
+              <span className="rounded-md bg-slate-200/80 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-bold text-slate-600 dark:text-slate-300 tracking-wider uppercase">
                 AD
               </span>
-              <span className="text-slate-700 dark:text-slate-200 font-semibold">
+              <span className="text-slate-700 dark:text-slate-300 font-semibold tabular-nums">
                 {bsDateInfo.adIso}
               </span>
             </span>
@@ -164,34 +172,34 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           type="button"
           onClick={onOpenBsModal}
-          className="inline-flex sm:hidden items-center gap-1 rounded-xl border border-slate-200/90 bg-slate-50/80 px-1.5 text-slate-700 transition-all hover:border-indigo-400 hover:bg-white dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-200 cursor-pointer shadow-2xs shrink-0 h-9"
+          className="inline-flex sm:hidden items-center gap-1 rounded-xl border border-slate-200/90 bg-slate-100/60 px-2 text-slate-700 transition-all hover:border-indigo-400 hover:bg-white dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200 cursor-pointer shadow-2xs shrink-0 h-9"
           title={`Nepal BS: ${bsDateInfo.bsIso} | AD: ${bsDateInfo.adIso} (Click to open converter)`}
           aria-label="Nepal Bikram Sambat Date Converter"
         >
           <Calendar className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-          <span className="rounded bg-indigo-100/90 dark:bg-indigo-950/80 px-1 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase leading-none">
+          <span className="rounded bg-indigo-100 dark:bg-indigo-950/80 px-1 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase leading-none">
             BS
           </span>
-          <span className="font-mono text-[10px] font-semibold text-slate-800 dark:text-slate-200 hidden min-[400px]:inline">
+          <span className="font-mono text-[10px] font-semibold text-slate-800 dark:text-slate-200 hidden min-[400px]:inline tabular-nums">
             {bsDateInfo.bsIso.slice(5)}
           </span>
         </button>
       </div>
 
-      {/* Zone 2: Middle - Centered Search Bar (Big on Desktop, Proportional on Tablet, Sleek on Mobile) */}
+      {/* Zone 2: Middle - Centered Command Search Bar */}
       <div className="flex flex-1 items-center justify-center min-w-0 px-1 sm:px-3 lg:px-6">
         <button
           type="button"
           onClick={onOpenSearch}
-          className="flex h-9 w-full max-w-[190px] xs:max-w-[230px] sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-xl items-center gap-2 rounded-xl border border-slate-200/90 bg-slate-50/80 px-2.5 sm:px-3 text-xs sm:text-sm text-slate-500 transition-all hover:border-indigo-400 hover:bg-white dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-400 dark:hover:border-indigo-500 dark:hover:bg-slate-800 cursor-pointer shadow-2xs group shrink"
+          className="flex h-9 w-full max-w-[190px] xs:max-w-[230px] sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-xl items-center gap-2 rounded-xl border border-slate-200/90 bg-slate-100/50 px-2.5 sm:px-3.5 text-xs sm:text-sm text-slate-500 transition-all hover:border-indigo-400 hover:bg-white dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-400 dark:hover:border-indigo-500/80 dark:hover:bg-slate-900 cursor-pointer shadow-2xs group shrink"
           aria-label="Global Search (Press to search)"
           title="Global Search (⌘K / Ctrl+K)"
         >
           <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-          <span className="truncate hidden xl:inline">Search notes, tasks, finance, goals...</span>
-          <span className="truncate hidden sm:inline xl:hidden">Search notes, tasks...</span>
-          <span className="truncate sm:hidden">Search...</span>
-          <kbd className="ml-auto hidden md:inline-flex items-center gap-0.5 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-900 shrink-0">
+          <span className="truncate hidden xl:inline text-slate-500 dark:text-slate-400 font-medium">Search notes, tasks, ledger, goals...</span>
+          <span className="truncate hidden sm:inline xl:hidden text-slate-500 dark:text-slate-400 font-medium">Search notes, tasks...</span>
+          <span className="truncate sm:hidden text-slate-500 dark:text-slate-400 font-medium">Search...</span>
+          <kbd className="ml-auto hidden md:inline-flex items-center gap-0.5 rounded-lg border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-800 shrink-0 shadow-2xs">
             ⌘K
           </kbd>
         </button>
@@ -203,7 +211,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           type="button"
           onClick={() => setIs24Hour(prev => !prev)}
-          className="flex h-9 items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-200/90 bg-slate-50/80 px-1.5 sm:px-2.5 text-left transition-all hover:border-indigo-400 hover:bg-white dark:border-slate-800 dark:bg-slate-800/80 dark:hover:border-indigo-500 dark:hover:bg-slate-800 shrink-0 cursor-pointer shadow-2xs group"
+          className="flex h-9 items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-200/90 bg-slate-100/60 px-2 sm:px-2.5 text-left transition-all hover:border-indigo-400 hover:bg-white dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-indigo-500 dark:hover:bg-slate-900 shrink-0 cursor-pointer shadow-2xs group"
           title="Live System Clock (Click to toggle 12h/24h format)"
           aria-label="Toggle 12/24 hour time format"
         >
@@ -223,7 +231,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setIsActionsOpen(!isActionsOpen)}
-            className="flex h-9 items-center gap-1 rounded-xl border border-slate-200 bg-white px-2 sm:px-2.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 cursor-pointer shrink-0"
+            className="flex h-9 items-center gap-1 rounded-xl border border-slate-200/90 bg-white px-2 sm:px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 cursor-pointer shrink-0 shadow-2xs"
             aria-label="Quick Actions"
             title="Fast Action Shortcuts"
           >
@@ -235,41 +243,41 @@ export const Header: React.FC<HeaderProps> = ({
           {isActionsOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsActionsOpen(false)} />
-              <div className="absolute right-0 top-full z-50 mt-1.5 w-52 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl dark:border-slate-800 dark:bg-slate-900 animate-in fade-in zoom-in-95">
+              <div className="absolute right-0 top-full z-50 mt-1.5 w-52 rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95 animate-in fade-in zoom-in-95">
                 <button
                   type="button"
                   onClick={() => { onOpenQuickCapture(); setIsActionsOpen(false); }}
-                  className="flex w-full items-center gap-2 rounded-xl bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500 cursor-pointer mb-1"
+                  className="flex w-full items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 px-2.5 py-1.5 text-xs font-semibold text-white hover:from-indigo-500 hover:to-indigo-600 cursor-pointer mb-1 shadow-sm shadow-indigo-500/25"
                 >
                   <Plus className="h-3.5 w-3.5" /> Quick Capture
                 </button>
                 <button
                   type="button"
                   onClick={() => { onOpenQuickCapture('task'); setIsActionsOpen(false); }}
-                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/80 cursor-pointer"
                 >
-                  <span className="text-emerald-500">✓</span> Add New Task
+                  <span className="text-emerald-500 font-bold">✓</span> Add New Task
                 </button>
                 <button
                   type="button"
                   onClick={() => { onOpenQuickCapture('note'); setIsActionsOpen(false); }}
-                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/80 cursor-pointer"
                 >
-                  <span className="text-amber-500">📝</span> Quick Note
+                  <span>📝</span> Quick Note
                 </button>
                 <button
                   type="button"
                   onClick={() => { onOpenQuickCapture('expense'); setIsActionsOpen(false); }}
-                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/80 cursor-pointer"
                 >
-                  <span className="text-emerald-500">💰</span> Log Expense
+                  <span>💰</span> Log Expense
                 </button>
                 <button
                   type="button"
                   onClick={() => { onNavigate('focus'); setIsActionsOpen(false); }}
-                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/80 cursor-pointer"
                 >
-                  <span className="text-indigo-500">⏱</span> Start Focus Block
+                  <span>⏱</span> Start Focus Block
                 </button>
               </div>
             </>
@@ -281,18 +289,18 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 cursor-pointer shrink-0"
+            className="flex h-9 items-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 cursor-pointer shrink-0 shadow-2xs"
             title="Switch Workspace Profile"
           >
             <Users className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
-            <span className="max-w-[85px] truncate">{currentProfile?.name || 'Workspace'}</span>
+            <span className="max-w-[90px] truncate">{currentProfile?.name || 'Workspace'}</span>
             <ChevronDown className="h-3 w-3 text-slate-400 shrink-0" />
           </button>
 
           {isProfileOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-              <div className="absolute right-0 top-full z-50 mt-1.5 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-800 dark:bg-slate-900 animate-in fade-in zoom-in-95">
+              <div className="absolute right-0 top-full z-50 mt-1.5 w-56 rounded-2xl border border-slate-200/90 bg-white/95 p-2 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95 animate-in fade-in zoom-in-95">
                 <div className="flex items-center justify-between px-2 py-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                     Switch Workspace
@@ -312,8 +320,8 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={() => { onSelectProfile(prof.id); setIsProfileOpen(false); }}
                     className={`flex w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-xs transition-colors cursor-pointer ${
                       prof.id === currentProfileId
-                        ? 'bg-indigo-50 font-semibold text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400'
-                        : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                        ? 'bg-indigo-50 font-semibold text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400'
+                        : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/80'
                     }`}
                   >
                     <span className="truncate">{prof.name}</span>
@@ -324,10 +332,10 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     type="button"
                     onClick={() => { onOpenMultiUser(); setIsProfileOpen(false); }}
-                    className="flex w-full items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs text-indigo-600 font-semibold hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/30 cursor-pointer"
+                    className="flex w-full items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs text-indigo-600 font-semibold hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/40 cursor-pointer"
                   >
                     <Users className="h-3.5 w-3.5" />
-                    <span>Multi-User Profiles & Pairing</span>
+                    <span>Profiles & Multi-Device Sync</span>
                   </button>
                 </div>
               </div>
@@ -339,44 +347,46 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           type="button"
           onClick={onToggleTheme}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 shrink-0 cursor-pointer"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200/90 bg-white text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 shrink-0 cursor-pointer shadow-2xs"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           aria-label="Toggle Dark/Light Mode"
         >
           {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-slate-700" />}
         </button>
 
-        {/* Custom Window Controls */}
-        <div className="flex items-center shrink-0">
-          <button
-            type="button"
-            onClick={() => void getCurrentWindow().minimize()}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent text-slate-500 transition-colors hover:bg-slate-200/40 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700/40 dark:hover:text-white cursor-pointer"
-            title="Minimize"
-            aria-label="Minimize window"
-          >
-            <Minus className="h-4 w-4" />
-          </button>
-          <button
-            id="om-maximize-button"
-            type="button"
-            onClick={() => void getCurrentWindow().toggleMaximize()}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent text-slate-500 transition-colors hover:bg-slate-200/40 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700/40 dark:hover:text-white cursor-pointer"
-            title="Maximize"
-            aria-label="Maximize window"
-          >
-            <Square className="h-3.5 w-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => void getCurrentWindow().close()}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent text-slate-500 transition-colors hover:bg-red-500/15 hover:text-red-600 dark:text-slate-300 dark:hover:bg-red-500/20 dark:hover:text-red-400 cursor-pointer"
-            title="Close"
-            aria-label="Close window"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+        {/* Custom Window Controls (Desktop/Tauri only) */}
+        {isTauri && (
+          <div className="flex items-center shrink-0">
+            <button
+              type="button"
+              onClick={() => { try { void getCurrentWindow().minimize(); } catch {} }}
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent text-slate-500 transition-colors hover:bg-slate-200/40 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700/40 dark:hover:text-white cursor-pointer"
+              title="Minimize"
+              aria-label="Minimize window"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <button
+              id="om-maximize-button"
+              type="button"
+              onClick={() => { try { void getCurrentWindow().toggleMaximize(); } catch {} }}
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent text-slate-500 transition-colors hover:bg-slate-200/40 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700/40 dark:hover:text-white cursor-pointer"
+              title="Maximize"
+              aria-label="Maximize window"
+            >
+              <Square className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => { try { void getCurrentWindow().close(); } catch {} }}
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent text-slate-500 transition-colors hover:bg-red-500/15 hover:text-red-600 dark:text-slate-300 dark:hover:bg-red-500/20 dark:hover:text-red-400 cursor-pointer"
+              title="Close"
+              aria-label="Close window"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

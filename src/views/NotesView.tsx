@@ -399,7 +399,12 @@ export const NotesView: React.FC<NotesViewProps> = ({
   }).sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
-    return (b.updatedAt || b.createdAt) - (a.updatedAt || a.createdAt);
+    if (a.date && b.date && a.date !== b.date) {
+      return b.date.localeCompare(a.date);
+    }
+    const bTime = b.updatedAt || b.createdAt || 0;
+    const aTime = a.updatedAt || a.createdAt || 0;
+    return bTime - aTime;
   });
 
   return (

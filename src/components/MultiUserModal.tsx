@@ -96,11 +96,12 @@ export const MultiUserModal: React.FC<MultiUserModalProps> = ({
       const colors = ['#7c3aed', '#059669', '#ea580c', '#0284c7', '#db2777', '#4f46e5'];
       const avatarColor = colors[(settings.profiles?.length || 0) % colors.length];
       const avatarChar = newProfileName.trim().charAt(0).toUpperCase();
+      const newId = generateUUID();
       const newProf: UserProfile = {
-        id: generateUUID(),
+        id: newId,
         name: newProfileName.trim(),
         role: newProfileRole,
-        email: `${cleanSlug || 'user'}-${newProf.id.slice(0, 8)}@omlifeos.local`,
+        email: `${cleanSlug || 'user'}-${newId.slice(0, 8)}@omlifeos.local`,
         avatarColor,
         avatarChar,
         authType: 'local',
@@ -196,8 +197,8 @@ export const MultiUserModal: React.FC<MultiUserModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm transition-all animate-in fade-in">
-      <div className="w-full max-w-md max-h-[92vh] flex flex-col rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md transition-all animate-in fade-in">
+      <div className="w-full max-w-md max-h-[92vh] flex flex-col rounded-3xl border border-slate-200/90 bg-white/95 shadow-2xl dark:border-white/10 dark:bg-slate-900/95 backdrop-blur-2xl overflow-hidden">
         {/* Top Header - Matches uploaded screenshot */}
         <div className="flex items-start justify-between p-5 pb-3 border-b border-slate-100 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-3">

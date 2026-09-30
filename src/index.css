@@ -10,9 +10,9 @@
   --color-indigo-500: color-mix(in srgb, var(--color-brand, #6366f1) 85%, white);
   --color-indigo-700: color-mix(in srgb, var(--color-brand, #6366f1) 85%, black);
   --color-indigo-400: color-mix(in srgb, var(--color-brand, #6366f1) 70%, white);
-  --color-indigo-50: color-mix(in srgb, var(--color-brand, #6366f1) 12%, white);
-  --color-indigo-100: color-mix(in srgb, var(--color-brand, #6366f1) 22%, white);
-  --color-indigo-950: color-mix(in srgb, var(--color-brand, #6366f1) 15%, black);
+  --color-indigo-50: color-mix(in srgb, var(--color-brand, #6366f1) 10%, white);
+  --color-indigo-100: color-mix(in srgb, var(--color-brand, #6366f1) 20%, white);
+  --color-indigo-950: color-mix(in srgb, var(--color-brand, #6366f1) 12%, black);
 }
 
 @layer base {
@@ -35,19 +35,79 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    letter-spacing: -0.011em;
+    letter-spacing: -0.012em;
+    background-color: #f8fafc;
+  }
+
+  html.dark body {
+    background-color: #070a13;
   }
 
   /* Universal typography baseline */
   h1, h2, h3, h4, h5, h6 {
-    letter-spacing: -0.02em;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    letter-spacing: -0.028em;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
+    text-wrap: balance;
   }
 
   .font-mono, [data-tabular="true"], .tabular-nums {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* Luxury ambient background texture */
+.app-bg-gradient {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.06) 0px, transparent 45%),
+    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 45%),
+    radial-gradient(at 50% 100%, rgba(59, 130, 246, 0.04) 0px, transparent 50%);
+}
+
+html.dark .app-bg-gradient {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 45%),
+    radial-gradient(at 100% 5%, rgba(139, 92, 246, 0.08) 0px, transparent 45%),
+    radial-gradient(at 50% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
+}
+
+/* Top-Tier Pro App Surface System */
+.executive-card {
+  position: relative;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background-color: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 6px 16px -4px rgba(15, 23, 42, 0.02);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+html.dark .executive-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(13, 18, 32, 0.88);
+  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+}
+
+.executive-card:hover {
+  border-color: rgba(203, 213, 225, 1);
+  box-shadow: 0 4px 12px 0 rgba(15, 23, 42, 0.05), 0 12px 24px -4px rgba(15, 23, 42, 0.03);
+}
+
+html.dark .executive-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* World-class Pro Pill active state */
+.pro-pill {
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pro-pill:hover {
+  transform: translateY(-1px);
+}
+
+.pro-pill:active {
+  transform: scale(0.97);
 }
 
 /* Hide scrollbars while allowing touch/wheel scrolling */
@@ -68,11 +128,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
+  background: rgba(148, 163, 184, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.6);
+  background: rgba(100, 116, 139, 0.55);
 }
 
 /* Prevent accidental horizontal overflow across all mobile screens */
@@ -87,10 +147,15 @@
 
 /* Smooth badge and card transitions */
 .card-hover {
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease;
 }
 .card-hover:hover {
   transform: translateY(-2px);
+}
+
+/* Micro-interaction for buttons */
+button:active:not(:disabled) {
+  transform: scale(0.985);
 }
 
 /* ==========================================================================

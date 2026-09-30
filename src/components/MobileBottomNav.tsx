@@ -17,7 +17,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeModule, 
   ];
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 pb-safe items-center justify-around border-t border-slate-200 bg-white/95 px-2 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 md:hidden shadow-lg">
+    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 pb-safe items-center justify-around border-t border-slate-200/80 bg-white/90 px-2 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/90 md:hidden shadow-xl">
       {tabs.map(tab => {
         const isActive = activeModule === tab.id;
         return (
@@ -25,16 +25,19 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeModule, 
             key={tab.id}
             type="button"
             onClick={() => onNavigate(tab.id)}
-            className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1.5 px-2 transition-all cursor-pointer ${
+            className={`relative flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1.5 px-2 transition-all cursor-pointer ${
               isActive
-                ? 'font-semibold text-indigo-600 dark:text-indigo-400'
+                ? 'font-bold text-indigo-600 dark:text-indigo-400'
                 : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
-            <div className={`transition-transform ${isActive ? 'scale-110' : ''}`}>
+            <div className={`transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
               {tab.icon}
             </div>
-            <span className="text-[11px] font-medium tracking-normal leading-tight">{tab.label}</span>
+            <span className="text-[10px] font-semibold tracking-tight leading-tight">{tab.label}</span>
+            {isActive && (
+              <span className="absolute bottom-1 h-1 w-1 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>
+            )}
           </button>
         );
       })}
