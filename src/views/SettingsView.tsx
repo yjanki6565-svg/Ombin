@@ -855,68 +855,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </div>
           </div>
 
-          {/* Universal GitHub, Windows EXE & Mobile ZIP Package Card */}
-          <div className="lg:col-span-12 rounded-3xl border border-indigo-200/80 bg-gradient-to-br from-indigo-50/50 via-white to-violet-50/40 p-5 sm:p-6 shadow-sm dark:border-indigo-900/50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-indigo-950/20 dark:to-slate-900 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-indigo-100/80 pb-4 dark:border-indigo-950/60">
-              <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 shrink-0">
-                  <Archive className="h-6 w-6" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                      Universal Project Archive (.ZIP) — GitHub, Windows EXE & Mobile
-                    </h2>
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                      Sovereign Multi-Platform
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-3xl">
-                    100% genuine standalone source bundle with <strong>Tauri v2 Windows native (.exe)</strong>, <strong>Android Mobile (.apk)</strong>, <strong>Web Site</strong>, local storage persistence, GitHub Actions CI/CD automation, and 1-click batch builders.
-                  </p>
-                </div>
-              </div>
-
-              <a
-                href="/om-lifeos-universal-master.zip"
-                download="om-lifeos-universal-master.zip"
-                className="flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-indigo-500/25 transition-all active:scale-98 shrink-0 cursor-pointer text-center"
-              >
-                <Download className="h-4 w-4" />
-                <span>Download Universal ZIP (0.75 MB)</span>
-              </a>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-              <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-3.5 dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span>🖥 Windows Desktop (.exe)</span>
-                </div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                  Run <code className="font-mono text-[10px] bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">1-CLICK-BUILD-WINDOWS-EXE.bat</code> or <code className="font-mono text-[10px] bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">npm run tauri:build</code> to create native NSIS installer.
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-3.5 dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span>📱 Mobile App (.apk)</span>
-                </div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                  Run <code className="font-mono text-[10px] bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">1-CLICK-BUILD-ANDROID-APK.bat</code> or <code className="font-mono text-[10px] bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">npm run tauri:android:build</code> for native Android APK.
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-3.5 dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span>🐙 GitHub & Web CI/CD</span>
-                </div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                  Push tags to auto-trigger <code className="font-mono text-[10px] bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">.github/workflows/release.yml</code> to release Windows & Web binaries.
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Danger Zone */}
           <div className="lg:col-span-12 rounded-3xl border border-red-200 bg-red-50/30 p-6 dark:border-red-950 dark:bg-red-950/10">
             <h2 className="text-sm font-bold text-rose-700 dark:text-rose-400">Danger Zone</h2>
