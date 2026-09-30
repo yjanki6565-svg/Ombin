@@ -1,4 +1,4 @@
-name: Build and release ॐ
+name: Build & Release Om-LifeOS Universal (Windows, Mobile & Web)
 
 on:
   push:
@@ -10,11 +10,11 @@ permissions:
 
 jobs:
   windows:
-    name: Windows
+    name: Windows Desktop (.exe / NSIS)
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v5
 
       - name: Setup Node.js
@@ -22,24 +22,13 @@ jobs:
         with:
           node-version: 22
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc
 
-      - name: Check Node.js, npm and Bun
-        run: |
-          node --version
-          npm --version
-          bun --version
-
       - name: Install dependencies
-        run: bun install
+        run: npm install
 
       - name: Build Windows release
         uses: tauri-apps/tauri-action@v0
@@ -47,11 +36,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: "ॐ ${{ github.ref_name }}"
+          releaseName: "Om-LifeOS Sovereign Universal ${{ github.ref_name }}"
           releaseBody: |
-            ॐ LifeOS ${{ github.ref_name }}
+            # ॐ Om-LifeOS ${{ github.ref_name }} — Universal Sovereign Release
 
-            Windows installer release.
+            ## Windows Desktop (.exe)
+            - Run the installer `.exe` or `.msi` below for full local sovereign desktop operation.
+            - 100% offline, local storage, encrypted snapshots, zero external dependency.
+
+            ## Web & Mobile
+            - Extract `om-lifeos-web-dist.zip` for instant web deployment.
+            - Complete source archive included with local database engines.
           releaseDraft: false
           prerelease: false
           args: "--target x86_64-pc-windows-msvc"
+
+  web:
+    name: Web Site & PWA Distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Static Web & PWA
+        run: npm run build
+
+      - name: Package Web Distribution
+        run: |
+          cd dist && zip -r ../om-lifeos-web-dist.zip . && cd ..
+
+      - name: Upload Web Artifact to Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: om-lifeos-web-dist.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
